@@ -1,17 +1,17 @@
 var express = require("express");
 var path = require("path");
 var bodyParser = require("body-parser");
-var mongodb = require("mongodb");
-var ObjectID = mongodb.ObjectID;
+var MongoClient = require('mongodb').MongoClient;
+var ObjectID = require('mongodb').ObjectID;
 
 /***************************************************************************/
 /* 1. Common Parameters for MongoDB and Server Port :                         */
 /***************************************************************************/
 var MONGODB_URL="localhost";
-var MONGODB_DBS="mongodb://localhost:27017/test";
-var MONGODB_DBS_NAME="test"
+var MONGODB_URL="mongodb://localhost:27017/";
+var MONGODB_NAME="test"
 var MONGODB_CONTACTS_COLLECTION = "contacts";
-var APP_SEVER_PORT = 3333;
+var MEAN_SEVER_PORT = 3333;
 
 var app = express();
 app.use(express.static(__dirname + "/public"));
@@ -23,53 +23,74 @@ app.use(bodyParser.json());
 /***************************************************************************/
 // Create a database variable outside of the database connection callback 
 // to reuse the connection pool in your app.
-var my_db;
+mydb = null;
 var my_server_port;
 
 // Connect to the database before starting the application server. 
-console.log("[server: 1.0] MongoDB.connecting : Begin ---->");
-mongodb.MongoClient.connect(MONGODB_DBS, function(err, database) {
-  if (err) {
-    console.log(err);
-    process.exit(1);
-  }
+console.log("[server: 1.0] MeanServer: Started ---->");
 
-  // Save database object from the callback for reuse.
-  // my_db = 'test';
-  my_db = database;
+function connect_to_mongo(db_name) {
+    var url = MONGODB_URL + MONGODB_NAME;
+    console.log('[server: 1.1] MeanServer connecting to MongoDB: '  + url);
+    MongoClient.connect(url, on_connect_bind(db_name, url));
 
-  my_server_port = APP_SEVER_PORT;
-  console.log("[server: 2.2] MongoDB.connected : DB= [%s]", MONGODB_DBS_NAME);
+}
+function on_connect_bind(db_name, url) {
+    function __on_connect(err, db) {
+        if (err) {
+            console.log("[server: 1.11] MeanServer: ERROR: failed to open " + url + ", err= " + err);
+            setTimeout(connect_to_mongo, 30000, db_name); // retry after 30 sec
+        }
+        else {
+            console.log("[server: 1.2] MeanServer DB conn to [%s] is OK, continuing init..", db_name);
+            //if( db_name == 'contacts')
+            mydb = db;
+        }
+    }
+    return __on_connect;
+}
 
-  // Initialize the app.
-  console.log("[server: 2.3] APP.listen : connecting on Port[%s] ---->", my_server_port);
-  var server = app.listen(my_server_port, function () {
-    var port = server.address().port;
-    console.log("[server: 2.4] APP.listen : App is running on Port[%s]", my_server_port);
-  });
-});
+connect_to_mongo('contacts');
+setTimeout(all_ready, 2000);
+function all_ready() {
+    if( mydb == null) {
+        console.log("[server: 2.11] [## Error] MeanServer: mydb is not yet ready !!! ");
+        setTimeout(all_ready, 2000);
+        return;
+    }
+
+    console.log("[server: 1.3] MongoDB.connected: DB= [%s]", MONGODB_NAME);
+    my_server_port = MEAN_SEVER_PORT;
+    // Initialize the app.
+    console.log("[server: 1.4] MeanServer.listen : connecting on Port[%s] ---->", my_server_port);
+    var server = app.listen(my_server_port, function () {
+        // var port = server.address().port;
+        console.log("[server: 1.6] MeanServer: App is running on Port[%s]", my_server_port);
+    });
+    console.log("[server: 1.5] MeanServer is ready: starting workers");
+    init_express_stack();
+}
 
 
 // Generic error handler used by all endpoints.
 function handleError(res, reason, message, code) {
-  console.log("[server: 9.1] handleError : Begin ---->");
-  console.log("ERROR: " + reason);
-  res.status(code || 500).json({"error": message});
-  console.log("[server: 9.2] handleError : End <----");
+    console.log("[server: 9.1] handleError : Begin ---->");
+    console.log("ERROR: " + reason);
+    res.status(code || 500).json({"error": message});
+    console.log("[server: 9.2] handleError : End <----");
 }
 
-
-/*******************************************************************
- * Main Route Entry Point :   
- * "/contacts"
+/*********************************************************************
+ * Main Route Entry Point : init_express_stack()
+ * this is one huge function that initializes express stack and routes
  *    GET: finds all contacts
  *    POST: creates a new contact
  *******************************************************************/
-console.log("[server: 1.1] app route : Begin ---->");
+function init_express_stack() {
+console.log("[server: 3.0] init_express_stack: app.roure: Begin ---->");
 
-// CONTACTS API ROUTES BELOW
-
-console.log("[server: 1.2] app route : contacts Object");
+// [3.1] CONTACTS API ROUTES BELOW
+console.log("[server: 3.1] init_express_stack: [contacts] Object");
 var api_contacts = require('./api_contacts.js');
 app.route('/contacts')
 .get(api_contacts.get_contacts)
@@ -78,6 +99,5 @@ app.get('/contacts/:id', api_contacts.get_contacts_id);
 app.put('/contacts/:id', api_contacts.put_contacts);
 app.delete('/contacts/:id', api_contacts.delete_contacts);
 
-console.log("[server: 1.9] app route : End: <----");
-
-exports.my_db    = my_db;
+console.log("[server: 3.9] init_express_stack: End: <----");
+}
