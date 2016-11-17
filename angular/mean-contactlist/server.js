@@ -17,6 +17,9 @@ var app = express();
 app.use(express.static(__dirname + "/public"));
 app.use(bodyParser.json());
 
+var log4js = require( "log4js" );
+log4js.configure( "./config/log4js.json" );
+var logger = log4js.getLogger( "test-file-appender" );
 
 /***************************************************************************/
 /* 2. Open MongoDB and start main Server Code                              */
@@ -27,22 +30,22 @@ mydb = null;
 var my_server_port;
 
 // Connect to the database before starting the application server. 
-console.log("[server: 1.0] MeanServer: Started ---->");
+logger.debug("[server: 1.0] MeanServer: Started ---->");
 
 function connect_to_mongo(db_name) {
     var url = MONGODB_URL + MONGODB_NAME;
-    console.log('[server: 1.1] MeanServer connecting to MongoDB: '  + url);
+    logger.debug('[server: 1.1] MeanServer connecting to MongoDB: '  + url);
     MongoClient.connect(url, on_connect_bind(db_name, url));
 
 }
 function on_connect_bind(db_name, url) {
     function __on_connect(err, db) {
         if (err) {
-            console.log("[server: 1.11] MeanServer: ERROR: failed to open " + url + ", err= " + err);
+            logger.debug("[server: 1.11] MeanServer: ERROR: failed to open " + url + ", err= " + err);
             setTimeout(connect_to_mongo, 30000, db_name); // retry after 30 sec
         }
         else {
-            console.log("[server: 1.2] MeanServer DB conn to [%s] is OK, continuing init..", db_name);
+            logger.debug("[server: 1.2] MeanServer DB conn to [%s] is OK, continuing init..", db_name);
             //if( db_name == 'contacts')
             mydb = db;
         }
@@ -54,30 +57,30 @@ connect_to_mongo('contacts');
 setTimeout(all_ready, 2000);
 function all_ready() {
     if( mydb == null) {
-        console.log("[server: 2.11] [## Error] MeanServer: mydb is not yet ready !!! ");
+        logger.debug("[server: 2.11] [## Error] MeanServer: mydb is not yet ready !!! ");
         setTimeout(all_ready, 2000);
         return;
     }
 
-    console.log("[server: 1.3] MongoDB.connected: DB= [%s]", MONGODB_NAME);
+    logger.debug("[server: 1.3] MongoDB.connected: DB= [%s]", MONGODB_NAME);
     my_server_port = MEAN_SEVER_PORT;
     // Initialize the app.
-    console.log("[server: 1.4] MeanServer.listen : connecting on Port[%s] ---->", my_server_port);
+    logger.debug("[server: 1.4] MeanServer.listen : connecting on Port[%s] ---->", my_server_port);
     var server = app.listen(my_server_port, function () {
         // var port = server.address().port;
-        console.log("[server: 1.6] MeanServer: App is running on Port[%s]", my_server_port);
+        logger.debug("[server: 1.6] MeanServer: App is running on Port[%s]", my_server_port);
     });
-    console.log("[server: 1.5] MeanServer is ready: starting workers");
+    logger.debug("[server: 1.5] MeanServer is ready: starting workers");
     init_express_stack();
 }
 
 
 // Generic error handler used by all endpoints.
 function handleError(res, reason, message, code) {
-    console.log("[server: 9.1] handleError : Begin ---->");
-    console.log("ERROR: " + reason);
+    logger.debug("[server: 9.1] handleError : Begin ---->");
+    logger.debug("ERROR: " + reason);
     res.status(code || 500).json({"error": message});
-    console.log("[server: 9.2] handleError : End <----");
+    logger.debug("[server: 9.2] handleError : End <----");
 }
 
 /*********************************************************************
@@ -87,10 +90,10 @@ function handleError(res, reason, message, code) {
  *    POST: creates a new contact
  *******************************************************************/
 function init_express_stack() {
-console.log("[server: 3.0] init_express_stack: app.roure: Begin ---->");
+logger.debug("[server: 3.0] init_express_stack: app.roure: Begin ---->");
 
 // [3.1] CONTACTS API ROUTES BELOW
-console.log("[server: 3.1] init_express_stack: [contacts] Object");
+logger.debug("[server: 3.1] init_express_stack: [contacts] Object");
 var api_contacts = require('./api_contacts.js');
 app.route('/contacts')
 .get(api_contacts.get_contacts)
@@ -99,5 +102,5 @@ app.get('/contacts/:id', api_contacts.get_contacts_id);
 app.put('/contacts/:id', api_contacts.put_contacts);
 app.delete('/contacts/:id', api_contacts.delete_contacts);
 
-console.log("[server: 3.9] init_express_stack: End: <----");
+logger.debug("[server: 3.9] init_express_stack: End: <----");
 }

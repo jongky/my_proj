@@ -10,10 +10,13 @@
  * ******************************************************************************/
 var CONTACTS_COLLECTION = "contacts";
 var ObjectID = require('mongodb').ObjectID;
+var log4js = require( "log4js" );
+log4js.configure( "./config/log4js.json" );
+var logger = log4js.getLogger( "test-file-appender" );
 
 function get_contacts(req,res)
 {
-  console.log("[api_contacts:11.1] api_routes.get_contacts : Begin -->");
+  logger.debug("[api_contacts:11.1] api_routes.get_contacts : Begin -->");
   // res.writeHead(200, {"Content-Type": "application/json"});
 
   var col = mydb.collection(CONTACTS_COLLECTION);
@@ -21,16 +24,16 @@ function get_contacts(req,res)
     if (err) {
       handleError(res, err.message, "Failed to get contacts.");
     } else {
-      console.log("[api_contacts:11.2] : get_contacts: docs"+ JSON.stringify(docs));
+      logger.debug("[api_contacts:11.2] : get_contacts: docs"+ JSON.stringify(docs));
       res.status(200).json(docs);  
     }
-    console.log("[api_contacts:11.9] api_routes.get_contacts : End <--");
+    logger.debug("[api_contacts:11.9] api_routes.get_contacts : End <--");
   });
 }
 
 function get_contacts_id(req,res)
 {
-  console.log("[api_contacts:12.1] api_routes.get_contacts_id : Begin -->");
+  logger.debug("[api_contacts:12.1] api_routes.get_contacts_id : Begin -->");
   // res.writeHead(200, {"Content-Type": "application/json"});
 
   mydb.collection(CONTACTS_COLLECTION).findOne({ _id: new ObjectID(req.params.id) }, function(err, doc) {
@@ -44,7 +47,7 @@ function get_contacts_id(req,res)
 
 function put_contacts(req,res)
 {
-  console.log("[api_contacts:13.1] api_routes.put_contacts : Begin -->");
+  logger.debug("[api_contacts:13.1] api_routes.put_contacts : Begin -->");
   // res.writeHead(200, {"Content-Type": "application/json"});
 
   var updateDoc = req.body;
@@ -57,12 +60,12 @@ function put_contacts(req,res)
       res.status(204).end();
     }
   });
-  console.log("[api_contacts:13.9] api_routes.put_contacts : End <--");
+  logger.debug("[api_contacts:13.9] api_routes.put_contacts : End <--");
 }
 
 function post_contacts(req,res)
 {
-  console.log("[api_contacts:14.1] api_routes.post_contacts : Begin -->");
+  logger.debug("[api_contacts:14.1] api_routes.post_contacts : Begin -->");
   // res.writeHead(200, {"Content-Type": "application/json"});
 
   var newContact = req.body;
@@ -79,12 +82,12 @@ function post_contacts(req,res)
       res.status(201).json(doc.ops[0]);
     }
   });
-  console.log("[api_contacts:14.9] api_routes.post_contacts : End <--");
+  logger.debug("[api_contacts:14.9] api_routes.post_contacts : End <--");
 }
 
 function delete_contacts(req,res)
 {
-  console.log("[api_contacts:15.1] api_routes.delete_contacts : Begin -->");
+  logger.debug("[api_contacts:15.1] api_routes.delete_contacts : Begin -->");
   // res.writeHead(200, {"Content-Type": "application/json"});
 
   mydb.collection(CONTACTS_COLLECTION).deleteOne({_id: new ObjectID(req.params.id)}, function(err, result) {
@@ -94,7 +97,7 @@ function delete_contacts(req,res)
       res.status(204).end();
     }
   });
-  console.log("[api_contacts:15.9] api_routes.delete_contacts : End <--");
+  logger.debug("[api_contacts:15.9] api_routes.delete_contacts : End <--");
 }
 
 exports.get_contacts    = get_contacts;

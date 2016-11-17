@@ -1,0 +1,46 @@
+17/11 14:26 DEBUG [server: 1.0] MeanServer: Started ---->
+17/11 14:28 DEBUG [server: 1.0] MeanServer: Started ---->
+17/11 14:28 DEBUG [server: 1.1] MeanServer connecting to MongoDB: mongodb://localhost:27017/test
+17/11 14:28 DEBUG [server: 1.2] MeanServer DB conn to [contacts] is OK, continuing init..
+17/11 14:29 DEBUG [server: 1.0] MeanServer: Started ---->
+17/11 14:29 DEBUG [server: 1.1] MeanServer connecting to MongoDB: mongodb://localhost:27017/test
+17/11 14:29 DEBUG [server: 1.2] MeanServer DB conn to [contacts] is OK, continuing init..
+17/11 14:30 DEBUG [server: 1.0] MeanServer: Started ---->
+17/11 14:30 DEBUG [server: 1.1] MeanServer connecting to MongoDB: mongodb://localhost:27017/test
+17/11 14:30 DEBUG [server: 1.2] MeanServer DB conn to [contacts] is OK, continuing init..
+17/11 14:30 DEBUG [server: 1.3] MongoDB.connected: DB= [test]
+17/11 14:30 DEBUG [server: 1.4] MeanServer.listen : connecting on Port[3333] ---->
+17/11 14:30 DEBUG [server: 1.5] MeanServer is ready: starting workers
+17/11 14:30 DEBUG [server: 3.0] init_express_stack: app.roure: Begin ---->
+17/11 14:30 DEBUG [server: 3.1] init_express_stack: [contacts] Object
+17/11 14:30 DEBUG [server: 3.9] init_express_stack: End: <----
+17/11 14:30 DEBUG [server: 1.6] MeanServer: App is running on Port[3333]
+17/11 14:31 DEBUG [server: 1.0] MeanServer: Started ---->
+17/11 14:31 DEBUG [server: 1.1] MeanServer connecting to MongoDB: mongodb://localhost:27017/test
+17/11 14:31 DEBUG [server: 1.2] MeanServer DB conn to [contacts] is OK, continuing init..
+17/11 14:31 DEBUG [server: 1.3] MongoDB.connected: DB= [test]
+17/11 14:31 DEBUG [server: 1.4] MeanServer.listen : connecting on Port[3333] ---->
+17/11 14:31 DEBUG [server: 1.5] MeanServer is ready: starting workers
+17/11 14:31 DEBUG [server: 3.0] init_express_stack: app.roure: Begin ---->
+17/11 14:31 DEBUG [server: 3.1] init_express_stack: [contacts] Object
+17/11 14:31 DEBUG [server: 3.9] init_express_stack: End: <----
+17/11 14:31 DEBUG [server: 1.6] MeanServer: App is running on Port[3333]
+17/11 14:32 DEBUG [server: 1.0] MeanServer: Started ---->
+17/11 14:32 DEBUG [server: 1.1] MeanServer connecting to MongoDB: mongodb://localhost:27017/test
+17/11 14:32 DEBUG [server: 1.2] MeanServer DB conn to [contacts] is OK, continuing init..
+17/11 14:32 DEBUG [server: 1.3] MongoDB.connected: DB= [test]
+17/11 14:32 DEBUG [server: 1.4] MeanServer.listen : connecting on Port[3333] ---->
+17/11 14:32 DEBUG [server: 3.9] init_express_stack: End: <----
+17/11 14:32 DEBUG [server: 1.5] MeanServer is ready: starting workers
+17/11 14:32 DEBUG [server: 1.6] MeanServer: App is running on Port[3333]
+17/11 14:32 DEBUG [server: 3.0] init_express_stack: app.roure: Begin ---->
+17/11 14:32 DEBUG [server: 3.1] init_express_stack: [contacts] Object
+17/11 14:32 DEBUG [api_contacts:11.1] api_routes.get_contacts : Begin -->
+17/11 14:32 DEBUG [api_contacts:11.2] : get_contacts: docs[{"_id":"582e291bd16645770386b88b","firstName":"Jongky","lastName":"Lee","email":"jlee@extremenetworks.com","phone":{"mobile":"408-315-1235","work":"408-123-1111"},"createDate":"2016-11-17T22:03:07.689Z"},{"_id":"582e2ac9afc683793b44992a","firstName":"Wing","lastName":"Test","email":"wing@zebra.com","phone":{"mobile":"111-111-1123"},"createDate":"2016-11-17T22:10:17.181Z"}]
+17/11 14:32 DEBUG [api_contacts:11.9] api_routes.get_contacts : End <--
+17/11 14:32 DEBUG [api_contacts:12.1] api_routes.get_contacts_id : Begin -->
+17/11 14:33 DEBUG [api_contacts:13.1] api_routes.put_contacts : Begin -->
+17/11 14:33 DEBUG [api_contacts:13.9] api_routes.put_contacts : End <--
+17/11 14:34 DEBUG [api_contacts:11.1] api_routes.get_contacts : Begin -->
+17/11 14:34 DEBUG [api_contacts:11.2] : get_contacts: docs[{"_id":"582e291bd16645770386b88b","firstName":"Jongky","lastName":"Lee","email":"jlee@extremenetworks.com","phone":{"mobile":"408-315-1235","work":"408-123-1111"},"createDate":"2016-11-17T22:03:07.689Z","address":"2363 Homestead Road"},{"_id":"582e2ac9afc683793b44992a","firstName":"Wing","lastName":"Test","email":"wing@zebra.com","phone":{"mobile":"111-111-1123"},"createDate":"2016-11-17T22:10:17.181Z"}]
+17/11 14:34 DEBUG [api_contacts:11.9] api_routes.get_contacts : End <--
