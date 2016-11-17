@@ -4,108 +4,80 @@ var bodyParser = require("body-parser");
 var mongodb = require("mongodb");
 var ObjectID = mongodb.ObjectID;
 
-var CONTACTS_COLLECTION = "contacts";
+/***************************************************************************/
+/* 1. Common Parameters for MongoDB and Server Port :                         */
+/***************************************************************************/
 var MONGODB_URL="localhost";
+var MONGODB_DBS="mongodb://localhost:27017/test";
+var MONGODB_DBS_NAME="test"
+var MONGODB_CONTACTS_COLLECTION = "contacts";
+var APP_SEVER_PORT = 3333;
 
 var app = express();
 app.use(express.static(__dirname + "/public"));
 app.use(bodyParser.json());
 
-// Create a database variable outside of the database connection callback to reuse the connection pool in your app.
-var db;
+
+/***************************************************************************/
+/* 2. Open MongoDB and start main Server Code                              */
+/***************************************************************************/
+// Create a database variable outside of the database connection callback 
+// to reuse the connection pool in your app.
+var my_db;
+var my_server_port;
+
 // Connect to the database before starting the application server. 
-mongodb.MongoClient.connect('mongodb://localhost:27017/test', function(err, database) {
+console.log("[server: 1.0] MongoDB.connecting : Begin ---->");
+mongodb.MongoClient.connect(MONGODB_DBS, function(err, database) {
   if (err) {
     console.log(err);
     process.exit(1);
   }
 
   // Save database object from the callback for reuse.
-  db = 'test';
-  console.log("Database connection ready");
+  // my_db = 'test';
+  my_db = database;
+
+  my_server_port = APP_SEVER_PORT;
+  console.log("[server: 2.2] MongoDB.connected : DB= [%s]", MONGODB_DBS_NAME);
 
   // Initialize the app.
-  var server = app.listen(process.env.PORT || 8080, function () {
+  console.log("[server: 2.3] APP.listen : connecting on Port[%s] ---->", my_server_port);
+  var server = app.listen(my_server_port, function () {
     var port = server.address().port;
-    console.log("App now running on port", port);
+    console.log("[server: 2.4] APP.listen : App is running on Port[%s]", my_server_port);
   });
 });
 
-// CONTACTS API ROUTES BELOW
 
 // Generic error handler used by all endpoints.
 function handleError(res, reason, message, code) {
+  console.log("[server: 9.1] handleError : Begin ---->");
   console.log("ERROR: " + reason);
   res.status(code || 500).json({"error": message});
+  console.log("[server: 9.2] handleError : End <----");
 }
 
-/*  "/contacts"
+
+/*******************************************************************
+ * Main Route Entry Point :   
+ * "/contacts"
  *    GET: finds all contacts
  *    POST: creates a new contact
- */
+ *******************************************************************/
+console.log("[server: 1.1] app route : Begin ---->");
 
-app.get("/contacts", function(req, res) {
-  db.collection(CONTACTS_COLLECTION).find({}).toArray(function(err, docs) {
-    if (err) {
-      handleError(res, err.message, "Failed to get contacts.");
-    } else {
-      res.status(200).json(docs);  
-    }
-  });
-});
+// CONTACTS API ROUTES BELOW
 
-app.post("/contacts", function(req, res) {
-  var newContact = req.body;
-  newContact.createDate = new Date();
+console.log("[server: 1.2] app route : contacts Object");
+var api_contacts = require('./api_contacts.js');
+app.route('/contacts')
+.get(api_contacts.get_contacts)
+.post(api_contacts.post_contacts);
+app.get('/contacts/:id', api_contacts.get_contacts_id);
+app.put('/contacts/:id', api_contacts.put_contacts);
+app.delete('/contacts/:id', api_contacts.delete_contacts);
 
-  if (!(req.body.firstName || req.body.lastName)) {
-    handleError(res, "Invalid user input", "Must provide a first or last name.", 400);
-  }
+console.log("[server: 1.9] app route : End: <----");
 
-  db.collection(CONTACTS_COLLECTION).insertOne(newContact, function(err, doc) {
-    if (err) {
-      handleError(res, err.message, "Failed to create new contact.");
-    } else {
-      res.status(201).json(doc.ops[0]);
-    }
-  });
-});
-
-/*  "/contacts/:id"
- *    GET: find contact by id
- *    PUT: update contact by id
- *    DELETE: deletes contact by id
- */
-
-app.get("/contacts/:id", function(req, res) {
-  db.collection(CONTACTS_COLLECTION).findOne({ _id: new ObjectID(req.params.id) }, function(err, doc) {
-    if (err) {
-      handleError(res, err.message, "Failed to get contact");
-    } else {
-      res.status(200).json(doc);  
-    }
-  });
-});
-
-app.put("/contacts/:id", function(req, res) {
-  var updateDoc = req.body;
-  delete updateDoc._id;
-
-  db.collection(CONTACTS_COLLECTION).updateOne({_id: new ObjectID(req.params.id)}, updateDoc, function(err, doc) {
-    if (err) {
-      handleError(res, err.message, "Failed to update contact");
-    } else {
-      res.status(204).end();
-    }
-  });
-});
-
-app.delete("/contacts/:id", function(req, res) {
-  db.collection(CONTACTS_COLLECTION).deleteOne({_id: new ObjectID(req.params.id)}, function(err, result) {
-    if (err) {
-      handleError(res, err.message, "Failed to delete contact");
-    } else {
-      res.status(204).end();
-    }
-  });
-});
+exports.my_db    = my_db;

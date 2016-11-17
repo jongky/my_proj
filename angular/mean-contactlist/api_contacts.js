@@ -1,4 +1,15 @@
-var CONTACTS_COLLECTION="contacts";
+/********************************************************************************
+ * File Name   : api_contact.js
+ * Description : Get query with filter option from UI and query DB
+ *               and return matching alarms to UI
+ * Collection  : "contacts"
+ * Input       : Rest API from UI
+ *
+ * Output      : 
+ *
+ * ******************************************************************************/
+
+var CONTACTS_COLLECTION = "contacts";
 var ObjectID = require('mongodb').ObjectID;
 
 function get_contacts(req,res)
